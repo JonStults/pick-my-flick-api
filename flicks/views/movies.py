@@ -41,20 +41,31 @@ class MoviesView(View):
             existing_movie = Movie.objects.filter(title=upperCaseTitle)
             user = User.objects.filter(id=data["userId"]).first()
             if existing_movie:
-                raise Exception(
-                    f"{existing_movie.first().title.title()} is already in the Pick My Flick db. Add this movie to your list?"
+                metaData = dict()
+                response[
+                    "message"
+                ] = f"{existing_movie.first().title.title()} has already been created, and remakes are getting old. Add this movie to your list?"
+                metaData["movieId"] = existing_movie.first().id
+                response["ok"] = False
+                response["metaData"] = metaData
+                response = json.dumps(response, default=lambda x: x.__dict__)
+                return HttpResponse(
+                    response, status=statusCode, content_type="application/json"
                 )
             if len(data["title"]) >= 5:
                 split_title = upperCaseTitle.split()
                 for s in split_title:
                     existing_string = Movie.objects.filter(title__contains=s.upper())
                     if existing_string:
+                        metaData = dict()
                         response["message"] = (
                             "Did you mean "
                             + existing_string.first().title.title()
                             + "?"
                         )
+                        metaData["movieId"] = existing_string.first().id
                         response["ok"] = False
+                        response["metaData"] = metaData
                         response = json.dumps(response, default=lambda x: x.__dict__)
                         return HttpResponse(
                             response, status=statusCode, content_type="application/json"
