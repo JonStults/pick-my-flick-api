@@ -30,10 +30,15 @@ ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
     "https://pick-my-flick-ui.herokuapp.com", 
+    'pick-my-flick-api.herokuapp.com',
     "http://pick-my-flick-ui.herokuapp.com"
 ]
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "http://127.0.0.1:3000", "https://pick-my-flick-ui.herokuapp.com", "http://pick-my-flick-ui.herokuapp.com"]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000", 
+    "https://pick-my-flick-ui.herokuapp.com",
+    "http://pick-my-flick-ui.herokuapp.com"]
 
 # Application definition
 
