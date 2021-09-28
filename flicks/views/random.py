@@ -1,12 +1,12 @@
 import json
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 import random
 from rest_framework import status
-from ..models import Movie, Genre, UserFlick, User
-from ..serializers import MovieSerializer
+from ..models import Movie, UserFlick, User
+from ..serializers import MovieSerializer, UserFlickSerializer
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -16,25 +16,28 @@ class RandomView(View):
         statusCode = status.HTTP_200_OK
         try:
             user_id = request.GET.get("userId")
-            random_number_list = set()
+            user = User.objects.filter(id=user_id).first()
             movie_list = list()
-            movie_length = len(Movie.objects.all())
+            # user_flicks = UserFlick.objects.filter(user=user.id)
+            user_flick_movies =  UserFlick.objects.filter(user=user.id).select_related("movie")
+            movie_length = len(user_flick_movies)
             retrieve_number = (
                 movie_length
                 if movie_length < int(request.GET.get("number"))
                 else int(request.GET.get("number"))
             )
             if retrieve_number > 0:
-                user = User.objects.filter(id=user_id).first()
-                id_list = UserFlick.objects.filter(user=user.id).values_list(
-                    "movie_id", flat=True
+                id_list = user_flick_movies.values_list(
+                    "id", flat=True
                 )
                 random_list = random.sample(
                     list(id_list), min(len(id_list), retrieve_number)
                 )
-                movies = Movie.objects.filter(id__in=random_list)
+                movies = user_flick_movies.filter(id__in=random_list)
+                # userFlicks = UserFlick.objects.filter(user_id=user_id)
                 for movie in movies:
-                    serializer = MovieSerializer(movie)
+                    serializer = UserFlickSerializer(movie)
+                    # serializer["watched"] = userFlicks.filter(movie_id=movie["id"])
                     movie_list.append(serializer.data)
                 response = movie_list
             else:

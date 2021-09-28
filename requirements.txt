@@ -6,3 +6,4 @@ requests
 django-cors-headers==3.0.2
 djangorestframework==3.10.3
 pyjwt
+requests
