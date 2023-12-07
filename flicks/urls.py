@@ -1,3 +1,4 @@
+from flicks.views.movieGenres import GetGenres
 from flicks.views.searchMovies import SearchMovies
 from django.urls import path
 from flicks.views.movies import MoviesView
@@ -16,5 +17,6 @@ urlpatterns = [
     path("random", RandomView.as_view()),
     path("userFlick", UserFlickView.as_view()),
     path("searchMovies", SearchMovies.as_view()),
+    path("getGenres", GetGenres.as_view())
 ]
 

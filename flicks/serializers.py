@@ -52,3 +52,9 @@ class SearchedMovie:
         self.text = data["title"]
         self.value = data["id"]
         self.key = data["id"]
+
+class MovieGenres:
+    def __init__(self, data):
+        self.name = data["name"]
+        self.id = data["id"]
+        self.key = data["id"]
