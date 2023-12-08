@@ -45,17 +45,7 @@ class UserFlickView(View):
             user_id = data["userId"]
             movie_id = data["movieId"]
             watched = data["watched"]
-            user_flick = UserFlick.objects.filter(movie=movie_id, user=user_id)
-
-            if user_flick:
-                # Update the watched attribute
-                user_flick.watched = watched
-                user_flick.save()
-            else:
-                # Handle the case where the UserFlick instance doesn't exist
-                statusCode = status.HTTP_404_NOT_FOUND
-                response["status"] = status.HTTP_404_NOT_FOUND
-                response["message"] = "UserFlick instance not found."    
+            UserFlick.objects.filter(movie=movie_id, user=user_id).update(watched=watched)
         except Exception as e:
             statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
             response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR
