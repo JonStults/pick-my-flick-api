@@ -45,7 +45,7 @@ class UserFlickView(View):
             user_id = data["userId"]
             movie_id = data["movieId"]
             watched = data["watched"]
-            user_flick = UserFlick.objects.filter(movie=movie_id, user=user_id).update(watched=watched)
+            user_flick = UserFlick.objects.filter(movie=movie_id, user=user_id)
 
             if user_flick:
                 # Update the watched attribute
