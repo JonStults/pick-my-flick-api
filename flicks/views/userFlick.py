@@ -23,7 +23,7 @@ class UserFlickView(View):
                 return HttpResponse(
                     response, status=statusCode, content_type="application/json"
                 )
-            user_flick = UserFlick(user=user, movie=new_movie)
+            user_flick = UserFlick(user=user, movie=movie)
             user_flick.save()
             response["message"] = ""
             response["ok"] = True
@@ -45,7 +45,17 @@ class UserFlickView(View):
             user_id = data["userId"]
             movie_id = data["movieId"]
             watched = data["watched"]
-            UserFlick.objects.filter(movie=movie_id, user=user_id).update(watched=watched)
+            user_flick = UserFlick.objects.filter(movie=movie_id, user=user_id).update(watched=watched)
+
+            if user_flick:
+                # Update the watched attribute
+                user_flick.watched = watched
+                user_flick.save()
+            else:
+                # Handle the case where the UserFlick instance doesn't exist
+                statusCode = status.HTTP_404_NOT_FOUND
+                response["status"] = status.HTTP_404_NOT_FOUND
+                response["message"] = "UserFlick instance not found."    
         except Exception as e:
             statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
             response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR

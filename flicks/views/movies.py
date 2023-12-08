@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from rest_framework import status
 from ..models import Movie, User, UserFlick
-from ..serializers import MovieSerializer
+from ..serializers import MovieSerializer, UserFlickSerializer
 
 @method_decorator(csrf_exempt, name="dispatch")
 class MoviesView(View):
@@ -13,10 +13,12 @@ class MoviesView(View):
         response = dict()
         statusCode = status.HTTP_200_OK
         try:
+            user_id = request.GET.get("userId")
+            user = User.objects.filter(id=user_id).first()
             movie_list = list()
-            movies = Movie.objects.all()
-            for movie in movies:
-                serializer = MovieSerializer(movie)
+            user_flick_movies =  UserFlick.objects.filter(user=user.id).select_related("movie")
+            for movie in user_flick_movies:
+                serializer = UserFlickSerializer(movie)
                 movie_list.append(serializer.data)
             response = movie_list
         except Exception as e:
@@ -24,6 +26,7 @@ class MoviesView(View):
             response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR
             response["message"] = "INTERNAL_SERVER_ERROR"
             response["detail"] = str(e)
+        response = json.dumps(response, default=lambda x: x.__dict__)
         return HttpResponse(
             response, status=statusCode, content_type="application/json"
         )
