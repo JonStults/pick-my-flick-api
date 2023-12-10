@@ -1,4 +1,5 @@
 import json
+import traceback
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -82,7 +83,6 @@ class UserFlickView(View):
         return HttpResponse(
             response, status=statusCode, content_type="application/json"
         )
-
     def put(self, request):
         response = dict()
         statusCode = status.HTTP_200_OK
@@ -92,6 +92,40 @@ class UserFlickView(View):
             movie_id = data["movieId"]
             watched = data["watched"]
             UserFlick.objects.filter(movie=movie_id, user=user_id).update(watched=watched)
+        except Exception as e:
+            statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response["message"] = "INTERNAL_SERVER_ERROR"
+            response["detail"] = str(e)
+        response = json.dumps(response, default=lambda x: x.__dict__)
+        return HttpResponse(
+            response, status=statusCode, content_type="application/json"
+        )
+    def delete(self, request):
+        response = dict()
+        statusCode = status.HTTP_200_OK
+        try: 
+            userId = request.GET.get("userId")
+            movieId = request.GET.get("movieId")
+            if userId is None or movieId is None:
+                raise ValueError("User ID and Movie ID are required for deletion.")
+            # Try to get the UserFlick to check if it exists
+            user_flick = UserFlick.objects.get(user_id=userId, movie_id=movieId)
+            user_flick.delete()
+
+            response["message"] = "UserFlick deleted successfully."
+            response["ok"] = True
+        except UserFlick.DoesNotExist:
+            # Handle the case where the UserFlick is not found
+            statusCode = status.HTTP_404_NOT_FOUND
+            response["ok"] = False
+            response["message"] = "UserFlick not found."
+        except ValueError as ve:
+            statusCode = status.HTTP_400_BAD_REQUEST
+            response["status"] = status.HTTP_400_BAD_REQUEST
+            response["message"] = "BAD_REQUEST"
+            response["detail"] = str(ve)
+            print(traceback.format_exc())
         except Exception as e:
             statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
             response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR
