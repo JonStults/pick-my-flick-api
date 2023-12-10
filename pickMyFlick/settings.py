@@ -29,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
+    "127.0.0.1",
     "https://pick-my-flick-ui.herokuapp.com", 
     'pick-my-flick-api.herokuapp.com',
     "http://pick-my-flick-ui.herokuapp.com"
@@ -92,10 +93,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "movies",
-        "HOST": "127.0.0.1",
+        "HOST": "localhost",
         "PORT": "5432",
-        "USER": "postgres",
-        "PASSWORD": "Pugoogoo11!",
+        "USER": "seanbrown",
+        "PASSWORD": "",
     }
 }
 

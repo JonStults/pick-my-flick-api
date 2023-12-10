@@ -3,11 +3,57 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
+from flicks.serializers import MovieSerializer, UserFlickSerializer
 from rest_framework import status
 from ..models import Movie, User, UserFlick
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UserFlickView(View):
+    def get(self, request):
+        response = dict()
+        statusCode = status.HTTP_200_OK
+        try: 
+            userId = request.GET.get("userId")
+            if userId is None:
+                raise ValueError("User ID is missing in the request.")
+           
+            movieId = request.GET.get("movieId")
+            if movieId is None:
+                raise ValueError("Movie ID is missing in the request.")
+            
+            user = User.objects.filter(id=userId).first()
+            existingMovie = Movie.objects.filter(id=movieId)
+            existingUserFlick = UserFlick.objects.filter(user=user, movie=existingMovie.first())
+
+            if not existingUserFlick.exists():
+                # Handle the case where no matching record is found
+                print("No matching record found.")
+                response["ok"] = False
+                response["message"] = "Movie ID not found."
+                statusCode = status.HTTP_404_NOT_FOUND
+            else:
+                serializer = UserFlickSerializer(existingUserFlick.first(), many=False)
+                response["ok"] = True
+                response = serializer.data
+        except UserFlick.DoesNotExist:
+            print("No matching record found.")
+            response["ok"] = False
+            response["message"] = "Movie ID not found."
+            statusCode = status.HTTP_404_NOT_FOUND
+        except ValueError as ve:
+            statusCode = status.HTTP_400_BAD_REQUEST
+            response["status"] = status.HTTP_400_BAD_REQUEST
+            response["message"] = "BAD_REQUEST"
+            response["detail"] = str(ve)
+        except Exception as e:
+            statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response["status"] = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response["message"] = "INTERNAL_SERVER_ERROR"
+            response["detail"] = str(e)
+        response = json.dumps(response, default=lambda x: x.__dict__)
+        return HttpResponse(
+            response, status=statusCode, content_type="application/json"
+        )
     def post(self, request):
         response = dict()
         statusCode = status.HTTP_200_OK
