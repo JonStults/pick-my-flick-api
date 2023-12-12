@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 import json
 import string
 import random
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta

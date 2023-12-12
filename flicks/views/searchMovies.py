@@ -1,5 +1,5 @@
 import json
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -7,12 +7,8 @@ import requests
 import os
 import random
 from rest_framework import status
-from ..models import Movie, Genre, User, UserFlick
-from ..serializers import MovieSerializer, SearchedMovie
+from ..serializers import  SearchedMovie
 from dotenv import load_dotenv
-from django.db.models.functions import Lower
-import re
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SearchMovies(View):
@@ -29,9 +25,6 @@ class SearchMovies(View):
             api_response = requests.request("GET", url)
             for r in api_response.json()["results"]:
                 movie_list.append(SearchedMovie(r))
-            print('----')
-            print(api_response.json())
-            print('----')
             response["message"] = ""
             response["ok"] = True
             response["movie_list"] = movie_list

@@ -6,7 +6,7 @@ from django.views import View
 import random
 from rest_framework import status
 from ..models import Movie, UserFlick, User
-from ..serializers import MovieSerializer, UserFlickSerializer
+from ..serializers import  UserFlickSerializer
 
 
 @method_decorator(csrf_exempt, name="dispatch")

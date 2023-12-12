@@ -1,9 +1,7 @@
-from django.shortcuts import render, redirect
 import json
 import string
 import random
-from django.http import HttpResponse, HttpResponseRedirect
-from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from datetime import datetime, timedelta
@@ -21,7 +19,6 @@ class LoginView(View):
         response = dict()
         statusCode = status.HTTP_200_OK
         try:
-            print("LOGIN")
             data = json.loads(request.body)
             user = User.objects.filter(username=data["username"])
             if not user:

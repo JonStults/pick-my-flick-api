@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from rest_framework import status
 from ..models import Movie, User, UserFlick
-from ..serializers import MovieSerializer, UserFlickSerializer
+from ..serializers import  UserFlickSerializer
 
 @method_decorator(csrf_exempt, name="dispatch")
 class MoviesView(View):
